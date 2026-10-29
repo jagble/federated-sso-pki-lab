@@ -1,0 +1,24 @@
+; CAPolicy.inf for PDS-Root-CA (part 3.2)
+; Copy to C:\Windows\CAPolicy.inf on the CA server BEFORE installing AD CS.
+; Windows reads it once, during installation.
+
+[Version]
+Signature="$Windows NT$"
+
+[Certsrv_Server]
+; If the root certificate is renewed, keep a 4096-bit key and a 10-year life
+RenewalKeyLength=4096
+RenewalValidityPeriod=Years
+RenewalValidityPeriodUnits=10
+; Publish a new CRL every week, and no delta CRLs
+CRLPeriod=Weeks
+CRLPeriodUnits=1
+CRLDeltaPeriodUnits=0
+; Don't publish the ~11 default certificate templates. Nothing is issuable until a template is added on purpose
+LoadDefaultTemplates=0
+AlternateSignatureAlgorithm=0
+
+; Empty sections keep the root certificate itself free of CRL and AIA addresses
+[CRLDistributionPoint]
+
+[AuthorityInformationAccess]
