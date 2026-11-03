@@ -1,6 +1,6 @@
 # Federated SSO and PKI Lab: AD FS to Entra Migration, SAML, OIDC and Certificate-Based Authentication
 
-**Status: 🔨 In progress, 2 of 8 parts done.** The design was written before the build, and parts are checked off as they're completed.
+**Status: 🔨 In progress, 3 of 8 parts done.** The design was written before the build, and parts are checked off as they're completed.
 
 This is Project 3 of my IAM portfolio. It uses the same fictional company, **Potomac Defense Systems (PDS)**, the same Active Directory domain from [Project 1](https://github.com/jagble/hybrid-iam-jml-lab), and the Conditional Access policies from Project 2.
 
@@ -23,10 +23,10 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 
 | Part | Title | What gets built | Status |
 |:---:|---|---|:---:|
-| **3.1** | [Design and prep](parts/3.1-design-and-prep/README.md) | Decisions, build order, capacity plan, the CA server | ✅ Done |
-| **3.2** | [PKI](parts/3.2-pki/README.md) | Enterprise CA with no default templates, auditing, a public CRL published daily by a managed identity | ✅ Done |
-| **3.3** | AD FS | AD FS server (Tier 0) running as a gMSA, TLS certificate from the CA | Next |
-| **3.4** | SAML on AD FS | ServiceNow signing in through AD FS: relying party trust, claim rules | Planned |
+| **3.1** | [Design and prep](parts/3.1-design-and-prep/README.md) | Decisions, build order, capacity plan, the CA server | ✅ |
+| **3.2** | [PKI](parts/3.2-pki/README.md) | Enterprise CA with no default templates, auditing, a public CRL published daily by a managed identity | ✅ |
+| **3.3** | [AD FS](parts/3.3-adfs/README.md) | AD FS in Tier 0 as a gMSA, TLS certificate from a locked-down template, sign-in auditing | ✅ |
+| **3.4** | SAML on AD FS | ServiceNow signing in through AD FS: relying party trust, claim rules | Next |
 | **3.5** | Migrate to Entra ID | ServiceNow moved to Entra SAML, Conditional Access applied, AD FS decommissioned | Planned |
 | **3.6** | OIDC and OAuth | App registration, authorization code flow with PKCE, scopes and consent, token inspection | Planned |
 | **3.7** | Provisioning | Automatic provisioning and deprovisioning to ServiceNow, tied to the JML lifecycle | Planned |
@@ -37,9 +37,11 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 | Area | Result |
 |---|---|
 | **Certificate authority** | `PDS-Root-CA` issues **nothing until a template is added on purpose**. By default a new enterprise CA would publish about 11 certificate types, some open to every user |
-| **Revocation** | The CRL is **public over HTTP**, so Entra ID can check revocation. A scheduled task uploads it daily using the CA VM's **managed identity**, scoped to one container, with storage account keys disabled |
+| **Revocation** | The CRL is **public over HTTP**, so Entra ID can check revocation. A scheduled task uploads it using the CA VM's **managed identity**, scoped to one container, with storage account keys disabled, and catches up if the CA was off |
+| **Certificate templates** | The only template, for web servers, is **server authentication only**, restricted to one enrollment group, and needs **manager approval** for every request |
+| **AD FS** | Runs in Tier 0 as a **gMSA** nobody knows the password to, with a TLS certificate that **checks its own revocation over the internet**. Every sign-in is audited, including failed ones |
 | **Privileged access** | Enterprise Admins was granted for the CA install only. The group is now **empty** |
-| **Findings** | 10 so far. See [3.1](parts/3.1-design-and-prep/README.md#5-findings) and [3.2](parts/3.2-pki/README.md#8-findings) |
+| **Findings** | 18 so far. See [3.1](parts/3.1-design-and-prep/README.md#5-findings), [3.2](parts/3.2-pki/README.md#8-findings) and [3.3](parts/3.3-adfs/README.md#8-findings) |
 
 ## Repository
 
@@ -47,7 +49,7 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 |---|---|
 | [`parts/`](parts/) | Step-by-step walkthroughs with screenshots, one per part |
 | [`docs/`](docs/) | The design |
-| [`scripts/`](scripts/) | CA policy file, CA install and configuration, CRL publishing |
+| [`scripts/`](scripts/) | CA policy file, CA install and configuration, CRL publishing, AD FS prerequisites, certificate request and install |
 
 ## Design
 
