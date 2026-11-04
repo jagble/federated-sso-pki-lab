@@ -26,8 +26,8 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 | **3.1** | [Design and prep](parts/3.1-design-and-prep/README.md) | Decisions, build order, capacity plan, the CA server | ✅ |
 | **3.2** | [PKI](parts/3.2-pki/README.md) | Enterprise CA with no default templates, auditing, a public CRL published daily by a managed identity | ✅ |
 | **3.3** | [AD FS](parts/3.3-adfs/README.md) | AD FS in Tier 0 as a gMSA, TLS certificate from a locked-down template, sign-in auditing | ✅ |
-| **3.4** | SAML on AD FS | ServiceNow signing in through AD FS: relying party trust, claim rules | Next |
-| **3.5** | Migrate to Entra ID | ServiceNow moved to Entra SAML, Conditional Access applied, AD FS decommissioned | Planned |
+| **3.4** | [SAML on AD FS](parts/3.4-saml-adfs/README.md) | ServiceNow signing in through AD FS, access limited to one group, users identified by employeeID | ✅ |
+| **3.5** | Migrate to Entra ID | ServiceNow moved to Entra SAML, Conditional Access applied, AD FS decommissioned | Next |
 | **3.6** | OIDC and OAuth | App registration, authorization code flow with PKCE, scopes and consent, token inspection | Planned |
 | **3.7** | Provisioning | Automatic provisioning and deprovisioning to ServiceNow, tied to the JML lifecycle | Planned |
 | **3.8** | Certificate-based authentication and review | User certificates, Entra certificate-based authentication, revocation test, final security review | Planned |
@@ -41,7 +41,7 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 | **Certificate templates** | The only template, for web servers, is **server authentication only**, restricted to one enrollment group, and needs **manager approval** for every request |
 | **AD FS** | Runs in Tier 0 as a **gMSA** nobody knows the password to, with a TLS certificate that **checks its own revocation over the internet**. Every sign-in is audited, including failed ones |
 | **Privileged access** | Enterprise Admins was granted for the CA install only. The group is now **empty** |
-| **Findings** | 18 so far. See [3.1](parts/3.1-design-and-prep/README.md#5-findings), [3.2](parts/3.2-pki/README.md#8-findings) and [3.3](parts/3.3-adfs/README.md#8-findings) |
+| **Findings** | 27 so far. See [3.1](parts/3.1-design-and-prep/README.md#5-findings), [3.2](parts/3.2-pki/README.md#8-findings), [3.3](parts/3.3-adfs/README.md#8-findings) and [3.4](parts/3.4-saml-adfs/README.md#7-findings) |
 
 ## Repository
 
@@ -49,7 +49,7 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 |---|---|
 | [`parts/`](parts/) | Step-by-step walkthroughs with screenshots, one per part |
 | [`docs/`](docs/) | The design |
-| [`scripts/`](scripts/) | CA policy file, CA install and configuration, CRL publishing, AD FS prerequisites, certificate request and install |
+| [`scripts/`](scripts/) | CA policy file, CA install and configuration, CRL publishing, AD FS prerequisites, certificate request and install, ServiceNow relying party trust |
 
 ## Design
 
