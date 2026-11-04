@@ -1,6 +1,6 @@
 # Federated SSO and PKI Lab: AD FS to Entra Migration, SAML, OIDC and Certificate-Based Authentication
 
-**Status: 🔨 In progress, 3 of 8 parts done.** The design was written before the build, and parts are checked off as they're completed.
+**Status: 🔨 In progress, 4 of 8 parts done.** The design was written before the build, and parts are checked off as they're completed.
 
 This is Project 3 of my IAM portfolio. It uses the same fictional company, **Potomac Defense Systems (PDS)**, the same Active Directory domain from [Project 1](https://github.com/jagble/hybrid-iam-jml-lab), and the Conditional Access policies from Project 2.
 
