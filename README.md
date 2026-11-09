@@ -1,6 +1,6 @@
 # Federated SSO and PKI Lab: AD FS to Entra Migration, SAML, OIDC and Certificate-Based Authentication
 
-**Status: 🔨 In progress, 4 of 8 parts done.** The design was written before the build, and parts are checked off as they're completed.
+**Status: 🔨 In progress, 5 of 8 parts done.** The design was written before the build, and parts are checked off as they're completed.
 
 This is Project 3 of my IAM portfolio. It uses the same fictional company, **Potomac Defense Systems (PDS)**, the same Active Directory domain from [Project 1](https://github.com/jagble/hybrid-iam-jml-lab), and the Conditional Access policies from Project 2.
 
@@ -27,8 +27,8 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 | **3.2** | [PKI](parts/3.2-pki/README.md) | Enterprise CA with no default templates, auditing, a public CRL published daily by a managed identity | ✅ |
 | **3.3** | [AD FS](parts/3.3-adfs/README.md) | AD FS in Tier 0 as a gMSA, TLS certificate from a locked-down template, sign-in auditing | ✅ |
 | **3.4** | [SAML on AD FS](parts/3.4-saml-adfs/README.md) | ServiceNow signing in through AD FS, access limited to one group, users identified by employeeID | ✅ |
-| **3.5** | Migrate to Entra ID | ServiceNow moved to Entra SAML, Conditional Access applied, AD FS decommissioned | Next |
-| **3.6** | OIDC and OAuth | App registration, authorization code flow with PKCE, scopes and consent, token inspection | Planned |
+| **3.5** | [Migrate to Entra ID](parts/3.5-migrate-to-entra/README.md) | ServiceNow moved to Entra ID with no identity changes, Conditional Access applied, AD FS fully decommissioned | ✅ |
+| **3.6** | OIDC and OAuth | App registration, authorization code flow with PKCE, scopes and consent, token inspection | Next |
 | **3.7** | Provisioning | Automatic provisioning and deprovisioning to ServiceNow, tied to the JML lifecycle | Planned |
 | **3.8** | Certificate-based authentication and review | User certificates, Entra certificate-based authentication, revocation test, final security review | Planned |
 
