@@ -1,6 +1,5 @@
 # Federated SSO and PKI Lab: AD FS to Entra Migration, SAML, OIDC and Certificate-Based Authentication
 
-**Status: 🔨 In progress, 6 of 8 parts done.** The design was written before the build, and parts are checked off as they're completed.
 
 This is Project 3 of my IAM portfolio. It uses the same fictional company, **Potomac Defense Systems (PDS)**, the same Active Directory domain from [Project 1](https://github.com/jagble/hybrid-iam-jml-lab), and the Conditional Access policies from Project 2.
 
@@ -29,8 +28,8 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 | **3.4** | [SAML on AD FS](parts/3.4-saml-adfs/README.md) | ServiceNow signing in through AD FS, access limited to one group, users identified by employeeID | ✅ |
 | **3.5** | [Migrate to Entra ID](parts/3.5-migrate-to-entra/README.md) | ServiceNow moved to Entra ID with no identity changes, Conditional Access applied, AD FS fully decommissioned | ✅ |
 | **3.6** | [OIDC and OAuth](parts/3.6-oidc-oauth/README.md) | A public client with no secret, authorization code flow with PKCE, scopes and admin consent, tokens decoded, refresh and revocation tested | ✅ |
-| **3.7** | Provisioning | Automatic provisioning and deprovisioning to ServiceNow, tied to the JML lifecycle | Planned |
-| **3.8** | Certificate-based authentication and review | User certificates, Entra certificate-based authentication, revocation test, final security review | Planned |
+| **3.7** | [Provisioning](parts/3.7-provisioning/README.md) | automatic provisioning to ServiceNow. Entra could never sign in to ServiceNow's API: traced to ServiceNow's front door and its new restriction on password-based API access | ⚠️ Blocked |
+| **3.8** | [Certificate-based authentication and review](parts/3.8-cba-and-review/README.md) | Certificate-only sign-in for a pilot group with certificates from my own CA, required by Conditional Access, a revocation test that found a gap, and the project review | ✅ |
 
 ## Results so far
 
@@ -40,12 +39,15 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 | **Revocation** | The CRL is **public over HTTP**, so Entra ID can check revocation. A scheduled task uploads it using the CA VM's **managed identity**, scoped to one container, with storage account keys disabled, and catches up if the CA was off |
 | **Certificate templates** | The only template, for web servers, is **server authentication only**, restricted to one enrollment group, and needs **manager approval** for every request |
 | **AD FS** | Runs in Tier 0 as a **gMSA** nobody knows the password to, with a TLS certificate that **checks its own revocation over the internet**. Every sign-in is audited, including failed ones |
-| **Privileged access** | Enterprise Admins was granted for the CA install only. The group is now **empty** |
 | **SAML sign-in** | ServiceNow signs users in through AD FS. Only `GG-App-ServiceNow` members get a token, and a refused user is stopped **at AD FS** (event 1201). Users are identified by **employeeID**, because AD UPNs use a non-routable suffix and would change when the app moves to Entra |
 | **Migration** | ServiceNow moved from AD FS to Entra ID **without changing any user's identity** (employee ID in both). The app now gets **MFA from Conditional Access**, which AD FS never applied. Every test ran with **AD FS powered off** |
 | **Decommission** | AD FS removed end to end: trust, **signing-key container in AD** (the Golden SAML target), **certificate revoked and published to the internet CRL**, service account, DNS record and server |
 | **OIDC and OAuth** | An app and API signing in with **PKCE and no client secret**. A wrong verifier, a reused code, an expired code and an unassigned user were **all refused**. Revoking sessions cut off refresh tokens in **24 seconds**, but an access token already issued stayed valid for about an hour |
-| **Findings** | 50 so far. See [3.1](parts/3.1-design-and-prep/README.md#5-findings), [3.2](parts/3.2-pki/README.md#8-findings), [3.3](parts/3.3-adfs/README.md#8-findings), [3.4](parts/3.4-saml-adfs/README.md#7-findings), [3.5](parts/3.5-migrate-to-entra/README.md#8-findings) and [3.6](parts/3.6-oidc-oauth/README.md#8-findings) |
+| **Provisioning** | **Blocked.** Every signed-in API call to ServiceNow failed at its load balancer, on two instances and for every account, while the website worked. The likely cause is ServiceNow's new default block on password-based API sign-ins. Untested fix and the remaining exposure (orphaned leaver accounts) documented |
+| **Certificate-based authentication** | Monica signs in with **only a certificate** from PDS-Root-CA, no password or phone. Her AD's `.internal` username was matched through **`certificateUserIds`, written by an Entra Connect sync rule**, after the documented on-premises UPN binding failed. CA PDS-Root-CA is **scoped to the pilot group**, and **CA009** makes a certificate the only accepted sign-in for that group |
+| **Certificate revocation** | **Gap found.** After revoking her certificate (Key Compromise) and publishing the CRL, **Entra still accepted it 15 and about 40 minutes later**, using its cached CRL. Revocation has to be paired with identity-side steps |
+| **Privileged access** | Enterprise Admins was granted for the CA install only. The group is now **empty** |
+| **Findings** | 68. See [3.1](parts/3.1-design-and-prep/README.md#5-findings), [3.2](parts/3.2-pki/README.md#8-findings), [3.3](parts/3.3-adfs/README.md#8-findings), [3.4](parts/3.4-saml-adfs/README.md#7-findings), [3.5](parts/3.5-migrate-to-entra/README.md#8-findings), [3.6](parts/3.6-oidc-oauth/README.md#8-findings), [3.7](parts/3.7-provisioning/README.md#7-findings) and [3.8](parts/3.8-cba-and-review/README.md#7-findings) |
 
 ## Repository
 
@@ -53,7 +55,7 @@ Projects 1 and 2 control **who** has access. This one is about **how** that acce
 |---|---|
 | [`parts/`](parts/) | Step-by-step walkthroughs with screenshots, one per part |
 | [`docs/`](docs/) | The design |
-| [`scripts/`](scripts/) | CA policy file, CA install and configuration, CRL publishing, AD FS prerequisites, certificate request and install, ServiceNow relying party trust, sync scope change, AD FS decommission, OIDC/PKCE test client |
+| [`scripts/`](scripts/) | CA policy file, CA install and configuration, CRL publishing, AD FS prerequisites, certificate request and install, ServiceNow relying party trust, sync scope change, AD FS decommission, OIDC/PKCE test client, user certificate request |
 
 ## Design
 
