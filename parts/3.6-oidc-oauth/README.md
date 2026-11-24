@@ -1,6 +1,6 @@
 # Part 3.6: OIDC and OAuth with PKCE
 
-[← 3.5 Migrate to Entra ID](../3.5-migrate-to-entra/README.md) · **3.6** · 3.7 Provisioning (next)
+[← 3.5 Migrate to Entra ID](../3.5-migrate-to-entra/README.md) · **3.6** · [3.7 Provisioning →](../3.7-provisioning/README.md)
 
 > **In this part:** I registered an app and an API in Entra ID and signed in to them with OpenID Connect and the OAuth authorization code flow with PKCE, with no client secret anywhere. Then I decoded the tokens, refreshed them, revoked them, and tried the attacks PKCE and assignment are meant to stop: a wrong verifier, a reused code, an expired code and an unassigned user.
 >
@@ -203,4 +203,4 @@ I decoded both JWTs locally. **Decoding isn't verifying**: anyone can read a tok
 
 ---
 
-**Next:** 3.7 Provisioning · [← Back to the project overview](../../README.md)
+**Next:** [3.7 Provisioning](../3.7-provisioning/README.md) · [← Back to the project overview](../../README.md)
